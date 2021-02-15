@@ -17,25 +17,26 @@ RUN yum -y update && \
     yum clean all && \
     rm -rf /var/cache/yum
 
+RUN echo export PATH=$PATH:"JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto.x86_64"
+
 # Install Node (AWS Amplify requirement)
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
 RUN /bin/bash -c ". ~/.nvm/nvm.sh && \
     nvm install $VERSION_NODE && nvm use $VERSION_NODE && \
     nvm alias default node && nvm cache clear"
 
-#Install Gradle
-RUN mkdir /opt/gradle
-RUN wget -c https://services.gradle.org/distributions/gradle-6.8-bin.zip
-RUN unzip -d /opt/gradle gradle-6.8-bin.zip
-
 # Configure environment
-RUN echo export PATH="\
+RUN echo export PATH=$PATH:"\
     /root/.nvm/versions/node/${VERSION_NODE}/bin:\
-    /opt/gradle/gradle-${VERSION_GRADLE}/bin:\
-    JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto.x86_64:\
     $PATH" >> ~/.bashrc && \
     echo "nvm use ${VERSION_NODE} 1> /dev/null" >> ~/.bashrc
 
 RUN curl -sL https://aws-amplify.github.io/amplify-cli/install | bash && $SHELL
+
+#Install Gradle
+RUN mkdir /opt/gradle
+RUN wget -c https://services.gradle.org/distributions/gradle-6.8-bin.zip
+RUN unzip -d /opt/gradle gradle-6.8-bin.zip
+RUN echo export PATH=$PATH:"/opt/gradle/gradle-${VERSION_GRADLE}/bin"
 
 ENTRYPOINT ["bash", "-c"]
