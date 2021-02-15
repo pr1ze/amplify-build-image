@@ -36,7 +36,6 @@ RUN echo export PATH="\
     $PATH" >> ~/.bashrc && \
     echo "nvm use ${VERSION_NODE} 1> /dev/null" >> ~/.bashrc
 
-RUN echo java -version
-RUN echo gradle --version
+RUN curl -sL https://aws-amplify.github.io/amplify-cli/install | bash && $SHELL
 
 ENTRYPOINT ["bash", "-c"]
